@@ -5,7 +5,7 @@
 //! and writing object files.
 //!
 //! See the [`File` struct](./read/struct.File.html) for details.
-
+#[!feature(ptr_cast)]
 #![deny(missing_docs)]
 #![deny(missing_debug_implementations)]
 #![no_std]
