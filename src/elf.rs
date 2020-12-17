@@ -7,7 +7,7 @@
 
 #![allow(clippy::identity_op)]
 
-use crate::endian::{Endian, I32, I64, U16, U32, U64};
+use crate::endian::{Endian, U32Bytes, U64Bytes, I32, I64, U16, U32, U64};
 use crate::pod::Pod;
 
 /// The header at the start of every 32-bit ELF file.
@@ -737,31 +737,37 @@ pub const SHF_MASKPROC: u32 = 0xf000_0000;
 /// Section compression header.
 ///
 /// Used when `SHF_COMPRESSED` is set.
+///
+/// Note: this type currently allows for misaligned headers, but that may be
+/// changed in a future version.
 #[derive(Debug, Default, Clone, Copy)]
 #[repr(C)]
 pub struct CompressionHeader32<E: Endian> {
     /// Compression format. One of the `ELFCOMPRESS_*` values.
-    pub ch_type: U32<E>,
+    pub ch_type: U32Bytes<E>,
     /// Uncompressed data size.
-    pub ch_size: U32<E>,
+    pub ch_size: U32Bytes<E>,
     /// Uncompressed data alignment.
-    pub ch_addralign: U32<E>,
+    pub ch_addralign: U32Bytes<E>,
 }
 
 /// Section compression header.
 ///
 /// Used when `SHF_COMPRESSED` is set.
+///
+/// Note: this type currently allows for misaligned headers, but that may be
+/// changed in a future version.
 #[derive(Debug, Default, Clone, Copy)]
 #[repr(C)]
 pub struct CompressionHeader64<E: Endian> {
     /// Compression format. One of the `ELFCOMPRESS_*` values.
-    pub ch_type: U32<E>,
+    pub ch_type: U32Bytes<E>,
     /// Reserved.
-    pub ch_reserved: U32<E>,
+    pub ch_reserved: U32Bytes<E>,
     /// Uncompressed data size.
-    pub ch_size: U64<E>,
+    pub ch_size: U64Bytes<E>,
     /// Uncompressed data alignment.
-    pub ch_addralign: U64<E>,
+    pub ch_addralign: U64Bytes<E>,
 }
 
 /// ZLIB/DEFLATE algorithm.
@@ -884,9 +890,9 @@ impl<E: Endian> Sym64<E> {
 #[repr(C)]
 pub struct Syminfo32<E: Endian> {
     /// Direct bindings, symbol bound to.
-    si_boundto: U16<E>,
+    pub si_boundto: U16<E>,
     /// Per symbol flags.
-    si_flags: U16<E>,
+    pub si_flags: U16<E>,
 }
 
 /// Additional information about a `Sym64`.
@@ -894,9 +900,9 @@ pub struct Syminfo32<E: Endian> {
 #[repr(C)]
 pub struct Syminfo64<E: Endian> {
     /// Direct bindings, symbol bound to.
-    si_boundto: U16<E>,
+    pub si_boundto: U16<E>,
     /// Per symbol flags.
-    si_flags: U16<E>,
+    pub si_flags: U16<E>,
 }
 
 // Values for `Syminfo*::si_boundto`.
@@ -1386,9 +1392,9 @@ pub const NT_VERSION: u32 = 1;
 #[repr(C)]
 pub struct Dyn32<E: Endian> {
     /// Dynamic entry type.
-    d_tag: I32<E>,
+    pub d_tag: I32<E>,
     /// Value (integer or address).
-    d_val: U32<E>,
+    pub d_val: U32<E>,
 }
 
 /// Dynamic section entry.
@@ -1396,9 +1402,9 @@ pub struct Dyn32<E: Endian> {
 #[repr(C)]
 pub struct Dyn64<E: Endian> {
     /// Dynamic entry type.
-    d_tag: I64<E>,
+    pub d_tag: I64<E>,
     /// Value (integer or address).
-    d_val: U64<E>,
+    pub d_val: U64<E>,
 }
 
 // Values for `Dyn*::d_tag`.

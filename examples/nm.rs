@@ -1,4 +1,7 @@
-use object::{Object, ObjectSection, SectionIndex, SectionKind, Symbol, SymbolKind, SymbolSection};
+use object::{
+    Object, ObjectSection, ObjectSymbol, SectionIndex, SectionKind, Symbol, SymbolKind,
+    SymbolSection,
+};
 use std::collections::HashMap;
 use std::{env, fs, process};
 
@@ -40,19 +43,19 @@ fn main() {
         let section_kinds = file.sections().map(|s| (s.index(), s.kind())).collect();
 
         println!("Debugging symbols:");
-        for (_, symbol) in file.symbols() {
+        for symbol in file.symbols() {
             print_symbol(&symbol, &section_kinds);
         }
         println!();
 
         println!("Dynamic symbols:");
-        for (_, symbol) in file.dynamic_symbols() {
+        for symbol in file.dynamic_symbols() {
             print_symbol(&symbol, &section_kinds);
         }
     }
 }
 
-fn print_symbol(symbol: &Symbol<'_>, section_kinds: &HashMap<SectionIndex, SectionKind>) {
+fn print_symbol(symbol: &Symbol<'_, '_>, section_kinds: &HashMap<SectionIndex, SectionKind>) {
     if let SymbolKind::Section | SymbolKind::File = symbol.kind() {
         return;
     }
@@ -69,6 +72,7 @@ fn print_symbol(symbol: &Symbol<'_>, section_kinds: &HashMap<SectionIndex, Secti
             | Some(SectionKind::OtherString)
             | Some(SectionKind::Debug)
             | Some(SectionKind::Linker)
+            | Some(SectionKind::Note)
             | Some(SectionKind::Metadata) => '?',
             Some(SectionKind::Text) => 't',
             Some(SectionKind::Data) | Some(SectionKind::Tls) | Some(SectionKind::TlsVariables) => {
